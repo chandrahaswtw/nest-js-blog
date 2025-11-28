@@ -1,4 +1,5 @@
-import { PrimaryGeneratedColumn, Column, Entity } from 'typeorm';
+import { Posts } from 'src/posts/posts.entity';
+import { PrimaryGeneratedColumn, Column, Entity, ManyToMany } from 'typeorm';
 
 @Entity()
 export class Tags {
@@ -36,4 +37,7 @@ export class Tags {
     length: 1024,
   })
   imageURL: string;
+
+  @ManyToMany(() => Posts, (post) => post.tags)
+  posts: Posts[];
 }

@@ -1,18 +1,40 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreatePostDTO } from '../dto/create-post.dto';
 import { PatchPostDTO } from '../dto/update-post.dto';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Posts } from './../posts.entity';
+import { UsersService } from 'src/users/providers/users.service';
+import { TagsService } from 'src/tags/providers/tags.service';
 
 @Injectable()
 export class PostsService {
   constructor(
     @InjectRepository(Posts)
     private readonly postRepository: Repository<Posts>,
+    private readonly usersService: UsersService,
+    private readonly tagsService: TagsService,
   ) {}
-  createPost(createPostData: CreatePostDTO) {
+  async createPost(createPostData: CreatePostDTO) {
+    const user = await this.usersService.getUserById(createPostData.authorId);
+    if (!user) {
+      throw new BadRequestException(
+        `User with id ${createPostData.authorId} is not found`,
+      );
+    }
     const newPost = this.postRepository.create({ ...createPostData });
+    newPost.author = user;
+
+    // Tags
+    if (createPostData.tagIds) {
+      const tags = await this.tagsService.getTagsByIds(createPostData.tagIds);
+      newPost.tags = tags;
+    }
+
     return this.postRepository.save(newPost);
   }
 
@@ -20,20 +42,21 @@ export class PostsService {
     return this.postRepository.find({
       take: count,
       skip: (page - 1) * 10,
-      relations: { metaOption: true },
+      relations: { metaOption: true, author: true, tags: true },
     });
   }
 
   async getPostById(id: number) {
-    const posts = await this.postRepository.find({
+    const post = await this.postRepository.findOne({
       where: [{ id }],
-      relations: { metaOption: true },
+      relations: { metaOption: true, author: true, tags: true },
     });
 
-    if (posts.length) {
-      return posts[0];
+    if (!post) {
+      throw new NotFoundException(`Post with id ${id} is not found`);
     }
-    throw new NotFoundException(`Post with id ${id} is not found`);
+
+    return post;
   }
 
   async patchPost(patchPostData: PatchPostDTO) {
