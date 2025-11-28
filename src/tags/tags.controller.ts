@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { TagsService } from './providers/tags.service';
 import { CreateTagDTO } from './dto/create-tags.dto';
+import { NonNegativeIntPipe } from './../utils/pipes/nonNegativePipe';
 
 @Controller('tags')
 export class TagsController {
@@ -23,9 +24,20 @@ export class TagsController {
 
   @Get()
   getTags(
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe)
+    @Query(
+      'page',
+      new DefaultValuePipe(1),
+      ParseIntPipe,
+      new NonNegativeIntPipe('page'),
+    )
     page: number,
-    @Query('count', new DefaultValuePipe(10), ParseIntPipe) count: number,
+    @Query(
+      'count',
+      new DefaultValuePipe(10),
+      ParseIntPipe,
+      new NonNegativeIntPipe('count'),
+    )
+    count: number,
   ) {
     return this.tagsService.getTags(page, count);
   }

@@ -44,7 +44,10 @@ export class Posts {
   })
   content: string;
 
-  @OneToOne(() => Metaoptions, { cascade: ['insert'], onDelete: 'CASCADE' })
+  @OneToOne(() => Metaoptions, (metaOption) => metaOption.post, {
+    cascade: ['insert'],
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   metaOption: Metaoptions;
 }
