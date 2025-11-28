@@ -4,10 +4,15 @@ import {
   Entity,
   OneToOne,
   JoinColumn,
+  ManyToOne,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { Metaoptions } from './../metaoptions/metaoptions.entity';
 import { EPostStatus } from './enum/post-status.enum';
 import { EPostType } from './enum/post-type.enum';
+import { Users } from 'src/users/users.entity';
+import { Tags } from 'src/tags/tags.entity';
 
 @Entity()
 export class Posts {
@@ -50,4 +55,11 @@ export class Posts {
   })
   @JoinColumn()
   metaOption: Metaoptions;
+
+  @ManyToOne(() => Users, (author) => author.post, { onDelete: 'CASCADE' })
+  author: Users;
+
+  @ManyToMany(() => Tags, (tag) => tag.posts)
+  @JoinTable()
+  tags: Tags[];
 }

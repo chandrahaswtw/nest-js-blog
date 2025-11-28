@@ -18,11 +18,18 @@ export class UsersService {
   }
 
   getUsers(page: number, count: number) {
-    return this.usersRepository.find({ take: count, skip: (page - 1) * 10 });
+    return this.usersRepository.find({
+      take: count,
+      skip: (page - 1) * 10,
+      relations: { post: true },
+    });
   }
 
   async getUserById(id: number) {
-    const user = await this.usersRepository.findOne({ where: { id } });
+    const user = await this.usersRepository.findOne({
+      where: { id },
+      relations: { post: true },
+    });
     if (!user) {
       throw new BadRequestException(`User with id: ${id} is not found`);
     }

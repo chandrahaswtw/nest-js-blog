@@ -6,6 +6,9 @@ import {
   MaxLength,
   IsOptional,
   ValidateNested,
+  IsInt,
+  IsArray,
+  IsIn,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -19,6 +22,11 @@ export class CreatePostDTO {
   @MinLength(3)
   @MaxLength(512)
   title: string;
+
+  @IsInt()
+  @IsNotEmpty()
+  @Type(() => Number)
+  authorId: number;
 
   @IsEnum(EPostType, {
     message: 'postType should be among Post, Page, Story, Series',
@@ -46,4 +54,9 @@ export class CreatePostDTO {
   @ValidateNested()
   @Type(() => CreateMetaOptionDTO)
   metaOption: CreateMetaOptionDTO;
+
+  @IsOptional()
+  @IsArray()
+  @IsInt({ each: true })
+  tagIds?: number[];
 }
