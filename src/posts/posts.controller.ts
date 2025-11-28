@@ -13,6 +13,7 @@ import {
 import { PostsService } from './providers/posts.service';
 import { CreatePostDTO } from './dto/create-post.dto';
 import { PatchPostDTO } from './dto/update-post.dto';
+import { NonNegativeIntPipe } from './../utils/pipes/nonNegativePipe';
 
 @Controller('posts')
 export class PostsController {
@@ -25,8 +26,20 @@ export class PostsController {
 
   @Get()
   getPosts(
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-    @Query('count', new DefaultValuePipe(10), ParseIntPipe) count: number,
+    @Query(
+      'page',
+      new DefaultValuePipe(1),
+      ParseIntPipe,
+      new NonNegativeIntPipe('page'),
+    )
+    page: number,
+    @Query(
+      'count',
+      new DefaultValuePipe(10),
+      ParseIntPipe,
+      new NonNegativeIntPipe('count'),
+    )
+    count: number,
   ) {
     return this.postsService.getPosts(page, count);
   }

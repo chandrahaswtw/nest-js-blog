@@ -1,13 +1,54 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { CreateMetaOptionDTO } from '../dto/create-metaoption.dto';
+import { Metaoptions } from './../metaoptions.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class MetaoptionsService {
-  createMetaOption(createMetaOptionData: CreateMetaOptionDTO) {}
+  constructor(
+    @InjectRepository(Metaoptions)
+    private readonly metaOptionsRepository: Repository<Metaoptions>,
+  ) {}
+  createMetaOption(createMetaOptionData: CreateMetaOptionDTO) {
+    const newMetaOption =
+      this.metaOptionsRepository.create(createMetaOptionData);
+    return this.metaOptionsRepository.save(newMetaOption);
+  }
 
-  getMetaOptions(page: number, count: number) {}
+  getMetaOptions(page: number, count: number) {
+    return this.metaOptionsRepository.find({
+      take: count,
+      skip: (page - 1) * 10,
+    });
+  }
 
-  getMetaOptionById(id: number) {}
+  async getMetaOptionById(id: number) {
+    const metaoption = await this.metaOptionsRepository.findOne({
+      where: { id },
+      relations: { post: true },
+    });
+    if (!metaoption) {
+      throw new BadRequestException(
+        `The metaOption with id: ${id} doesn't exist`,
+      );
+    }
+    return metaoption;
+  }
 
-  deleteMetaOption(id: number) {}
+  async deleteMetaOption(id: number) {
+    const metaoption = await this.metaOptionsRepository.findOne({
+      where: { id },
+    });
+    if (!metaoption) {
+      throw new BadRequestException(
+        `The metaOption with id: ${id} doesn't exist`,
+      );
+    }
+    await this.metaOptionsRepository.remove(metaoption);
+    return {
+      delete: 'success',
+      id,
+    };
+  }
 }

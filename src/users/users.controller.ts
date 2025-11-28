@@ -13,6 +13,7 @@ import {
 import { CreateUserDTO } from './dto/create-user.dto';
 import { PatchUserDTO } from './dto/patch-user.dto';
 import { UsersService } from './providers/users.service';
+import { NonNegativeIntPipe } from './../utils/pipes/nonNegativePipe';
 
 @Controller('users')
 export class UsersController {
@@ -24,8 +25,20 @@ export class UsersController {
 
   @Get()
   getUsers(
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-    @Query('count', new DefaultValuePipe(10), ParseIntPipe) count: number,
+    @Query(
+      'page',
+      new DefaultValuePipe(1),
+      ParseIntPipe,
+      new NonNegativeIntPipe('page'),
+    )
+    page: number,
+    @Query(
+      'count',
+      new DefaultValuePipe(10),
+      ParseIntPipe,
+      new NonNegativeIntPipe('count'),
+    )
+    count: number,
   ) {
     return this.usersService.getUsers(page, count);
   }
