@@ -5,6 +5,7 @@ import { PrimaryGeneratedColumn, Column, Entity, OneToOne } from 'typeorm';
 export class Metaoptions {
   @PrimaryGeneratedColumn()
   id: number;
+
   @Column({
     type: 'varchar',
   })

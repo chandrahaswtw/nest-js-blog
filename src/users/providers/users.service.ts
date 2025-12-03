@@ -1,15 +1,21 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  ConflictException,
+} from '@nestjs/common';
 import { CreateUserDTO } from '../dto/create-user.dto';
 import { PatchUserDTO } from '../dto/patch-user.dto';
 import { Users } from './../users.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
+import { createManyUsersDTO } from '../dto/create-many-users.dto';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(Users)
     private readonly usersRepository: Repository<Users>,
+    private readonly dataSource: DataSource,
   ) {}
 
   createUser(createUserData: CreateUserDTO) {
@@ -58,5 +64,39 @@ export class UsersService {
       delete: 'success',
       id,
     };
+  }
+
+  async createManyUsers(createManyUsersData: createManyUsersDTO) {
+    const users: Users[] = [];
+
+    // Create query runner instance.
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    // Connect query runner to data source.
+    await queryRunner.connect();
+
+    // Start transcation
+    await queryRunner.startTransaction();
+
+    try {
+      for (const user of createManyUsersData.users) {
+        const newUser = queryRunner.manager.create(Users, user);
+        const createdUser = await queryRunner.manager.save(newUser);
+        users.push(createdUser);
+      }
+      // If successful the commit
+      await queryRunner.commitTransaction();
+    } catch (error: any) {
+      // If failed then rollback
+      await queryRunner.rollbackTransaction();
+      throw new ConflictException("Couldn't complete the transaction", {
+        description: String(error),
+      });
+    } finally {
+      // Release connection
+      await queryRunner.release();
+    }
+
+    return users;
   }
 }
