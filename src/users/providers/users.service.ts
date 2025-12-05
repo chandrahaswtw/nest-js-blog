@@ -9,6 +9,8 @@ import { Users } from './../users.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import { createManyUsersDTO } from '../dto/create-many-users.dto';
+import { PaginationService } from 'src/common/pagination/providers/pagination.service';
+import { PaginateQueryDTO } from 'src/common/pagination/dto/paginate-query.dto';
 
 @Injectable()
 export class UsersService {
@@ -16,6 +18,7 @@ export class UsersService {
     @InjectRepository(Users)
     private readonly usersRepository: Repository<Users>,
     private readonly dataSource: DataSource,
+    private readonly paginationService: PaginationService,
   ) {}
 
   createUser(createUserData: CreateUserDTO) {
@@ -23,12 +26,15 @@ export class UsersService {
     return this.usersRepository.save(user);
   }
 
-  getUsers(page: number, count: number) {
-    return this.usersRepository.find({
-      take: count,
-      skip: (page - 1) * 10,
-      relations: { post: true },
-    });
+  getUsers(getUsersQueryData: PaginateQueryDTO) {
+    const { limit, page } = getUsersQueryData;
+    return this.paginationService.paginateQuery(
+      {
+        limit,
+        page,
+      },
+      this.usersRepository,
+    );
   }
 
   async getUserById(id: number) {

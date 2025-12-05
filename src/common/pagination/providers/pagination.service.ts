@@ -29,7 +29,7 @@ export class PaginationService {
   async paginateQuery<T extends ObjectLiteral>(
     paginateQueryData: PaginateQueryDTO,
     repository: Repository<T>,
-  ) {
+  ): Promise<IPaginated<T>> {
     const url = new URL(
       this.request.protocol + '://' + this.request.headers.host,
     );

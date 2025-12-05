@@ -8,13 +8,13 @@ import {
   Patch,
   Post,
   Query,
-  DefaultValuePipe,
 } from '@nestjs/common';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { PatchUserDTO } from './dto/patch-user.dto';
 import { UsersService } from './providers/users.service';
 import { createManyUsersDTO } from './dto/create-many-users.dto';
-import { ApiParam, ApiQuery, ApiOperation } from '@nestjs/swagger';
+import { ApiParam, ApiOperation } from '@nestjs/swagger';
+import { PaginateQueryDTO } from 'src/common/pagination/dto/paginate-query.dto';
 
 @Controller('users')
 export class UsersController {
@@ -34,27 +34,8 @@ export class UsersController {
 
   @Get()
   @ApiOperation({ summary: 'Get users' })
-  @ApiQuery({
-    name: 'page',
-    type: 'number',
-    required: true,
-    example: 1,
-    description: 'Enter the page number',
-  })
-  @ApiQuery({
-    name: 'count',
-    type: 'number',
-    required: true,
-    example: 5,
-    description: 'Enter the page count',
-  })
-  getUsers(
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe)
-    page: number,
-    @Query('count', new DefaultValuePipe(10), ParseIntPipe)
-    count: number,
-  ) {
-    return this.usersService.getUsers(page, count);
+  getUsers(@Query() getUsersQueryData: PaginateQueryDTO) {
+    return this.usersService.getUsers(getUsersQueryData);
   }
 
   @Get('/:id')

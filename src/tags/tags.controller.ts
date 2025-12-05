@@ -5,13 +5,13 @@ import {
   Delete,
   Body,
   Query,
-  DefaultValuePipe,
   ParseIntPipe,
   Param,
 } from '@nestjs/common';
 import { TagsService } from './providers/tags.service';
 import { CreateTagDTO } from './dto/create-tags.dto';
-import { ApiParam, ApiQuery, ApiOperation } from '@nestjs/swagger';
+import { ApiParam, ApiOperation } from '@nestjs/swagger';
+import { PaginateQueryDTO } from 'src/common/pagination/dto/paginate-query.dto';
 
 @Controller('tags')
 export class TagsController {
@@ -25,27 +25,8 @@ export class TagsController {
 
   @Get()
   @ApiOperation({ summary: 'Get tags' })
-  @ApiQuery({
-    name: 'page',
-    type: 'number',
-    required: true,
-    example: 1,
-    description: 'Enter the page number',
-  })
-  @ApiQuery({
-    name: 'count',
-    type: 'number',
-    required: true,
-    example: 5,
-    description: 'Enter the page count',
-  })
-  getTags(
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe)
-    page: number,
-    @Query('count', new DefaultValuePipe(10), ParseIntPipe)
-    count: number,
-  ) {
-    return this.tagsService.getTags(page, count);
+  getTags(@Query() getTagsQueryData: PaginateQueryDTO) {
+    return this.tagsService.getTags(getTagsQueryData);
   }
 
   @Get('/:id')

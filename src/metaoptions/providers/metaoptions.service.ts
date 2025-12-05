@@ -3,12 +3,15 @@ import { CreateMetaOptionDTO } from '../dto/create-metaoption.dto';
 import { Metaoptions } from './../metaoptions.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { PaginationService } from 'src/common/pagination/providers/pagination.service';
+import { PaginateQueryDTO } from 'src/common/pagination/dto/paginate-query.dto';
 
 @Injectable()
 export class MetaoptionsService {
   constructor(
     @InjectRepository(Metaoptions)
     private readonly metaOptionsRepository: Repository<Metaoptions>,
+    private readonly paginationService: PaginationService,
   ) {}
   createMetaOption(createMetaOptionData: CreateMetaOptionDTO) {
     const newMetaOption =
@@ -16,11 +19,15 @@ export class MetaoptionsService {
     return this.metaOptionsRepository.save(newMetaOption);
   }
 
-  getMetaOptions(page: number, count: number) {
-    return this.metaOptionsRepository.find({
-      take: count,
-      skip: (page - 1) * 10,
-    });
+  getMetaOptions(getMetaoptionsQueryData: PaginateQueryDTO) {
+    const { limit, page } = getMetaoptionsQueryData;
+    return this.paginationService.paginateQuery(
+      {
+        limit,
+        page,
+      },
+      this.metaOptionsRepository,
+    );
   }
 
   async getMetaOptionById(id: number) {

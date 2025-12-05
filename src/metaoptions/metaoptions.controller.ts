@@ -6,12 +6,12 @@ import {
   Param,
   ParseIntPipe,
   Body,
-  DefaultValuePipe,
   Delete,
 } from '@nestjs/common';
 import { MetaoptionsService } from './providers/metaoptions.service';
 import { CreateMetaOptionDTO } from './dto/create-metaoption.dto';
-import { ApiParam, ApiQuery, ApiOperation } from '@nestjs/swagger';
+import { ApiParam, ApiOperation } from '@nestjs/swagger';
+import { PaginateQueryDTO } from 'src/common/pagination/dto/paginate-query.dto';
 
 @Controller('metaoptions')
 export class MetaoptionsController {
@@ -26,27 +26,8 @@ export class MetaoptionsController {
 
   @Get()
   @ApiOperation({ summary: 'Get mutiple metaoptions' })
-  @ApiQuery({
-    name: 'page',
-    type: 'number',
-    required: true,
-    example: 1,
-    description: 'Enter the page number',
-  })
-  @ApiQuery({
-    name: 'count',
-    type: 'number',
-    required: true,
-    example: 5,
-    description: 'Enter the page count',
-  })
-  getMetaOptions(
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe)
-    page: number,
-    @Query('count', new DefaultValuePipe(10), ParseIntPipe)
-    count: number,
-  ) {
-    return this.metaOptionsService.getMetaOptions(page, count);
+  getMetaOptions(@Query() getMetaoptionsQueryData: PaginateQueryDTO) {
+    return this.metaOptionsService.getMetaOptions(getMetaoptionsQueryData);
   }
 
   @Get('/:id')
