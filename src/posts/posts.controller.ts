@@ -13,8 +13,8 @@ import {
 import { PostsService } from './providers/posts.service';
 import { CreatePostDTO } from './dto/create-post.dto';
 import { PatchPostDTO } from './dto/update-post.dto';
-import { NonNegativeIntPipe } from './../utils/pipes/nonNegativePipe';
 import { ApiParam, ApiQuery, ApiOperation } from '@nestjs/swagger';
+import { GetPostsDTO } from './dto/get-posts.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -28,37 +28,8 @@ export class PostsController {
 
   @Get()
   @ApiOperation({ summary: 'Get posts' })
-  @ApiQuery({
-    name: 'page',
-    type: 'number',
-    required: true,
-    example: 1,
-    description: 'Enter the page number',
-  })
-  @ApiQuery({
-    name: 'count',
-    type: 'number',
-    required: true,
-    example: 5,
-    description: 'Enter the page count',
-  })
-  getPosts(
-    @Query(
-      'page',
-      new DefaultValuePipe(1),
-      ParseIntPipe,
-      new NonNegativeIntPipe('page'),
-    )
-    page: number,
-    @Query(
-      'count',
-      new DefaultValuePipe(10),
-      ParseIntPipe,
-      new NonNegativeIntPipe('count'),
-    )
-    count: number,
-  ) {
-    return this.postsService.getPosts(page, count);
+  getPosts(@Query() getPostsQuery: GetPostsDTO) {
+    return this.postsService.getPosts(getPostsQuery);
   }
 
   @Get('/:id')

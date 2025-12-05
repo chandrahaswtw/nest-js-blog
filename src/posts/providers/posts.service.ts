@@ -10,6 +10,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Posts } from './../posts.entity';
 import { UsersService } from 'src/users/providers/users.service';
 import { TagsService } from 'src/tags/providers/tags.service';
+import { GetPostsDTO } from '../dto/get-posts.dto';
+import { PaginationService } from 'src/common/pagination/providers/pagination.service';
 
 @Injectable()
 export class PostsService {
@@ -18,6 +20,7 @@ export class PostsService {
     private readonly postRepository: Repository<Posts>,
     private readonly usersService: UsersService,
     private readonly tagsService: TagsService,
+    private readonly paginationService: PaginationService,
   ) {}
   async createPost(createPostData: CreatePostDTO) {
     const user = await this.usersService.getUserById(createPostData.authorId);
@@ -38,12 +41,14 @@ export class PostsService {
     return this.postRepository.save(newPost);
   }
 
-  getPosts(page: number, count: number) {
-    return this.postRepository.find({
-      take: count,
-      skip: (page - 1) * 10,
-      relations: { metaOption: true, author: true, tags: true },
-    });
+  getPosts(getPostQueryData: GetPostsDTO) {
+    return this.paginationService.paginateQuery(
+      {
+        limit: getPostQueryData.limit,
+        page: getPostQueryData.page,
+      },
+      this.postRepository,
+    );
   }
 
   async getPostById(id: number) {

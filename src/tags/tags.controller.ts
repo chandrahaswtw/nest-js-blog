@@ -11,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { TagsService } from './providers/tags.service';
 import { CreateTagDTO } from './dto/create-tags.dto';
-import { NonNegativeIntPipe } from './../utils/pipes/nonNegativePipe';
 import { ApiParam, ApiQuery, ApiOperation } from '@nestjs/swagger';
 
 @Controller('tags')
@@ -41,19 +40,9 @@ export class TagsController {
     description: 'Enter the page count',
   })
   getTags(
-    @Query(
-      'page',
-      new DefaultValuePipe(1),
-      ParseIntPipe,
-      new NonNegativeIntPipe('page'),
-    )
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe)
     page: number,
-    @Query(
-      'count',
-      new DefaultValuePipe(10),
-      ParseIntPipe,
-      new NonNegativeIntPipe('count'),
-    )
+    @Query('count', new DefaultValuePipe(10), ParseIntPipe)
     count: number,
   ) {
     return this.tagsService.getTags(page, count);

@@ -13,7 +13,6 @@ import {
 import { CreateUserDTO } from './dto/create-user.dto';
 import { PatchUserDTO } from './dto/patch-user.dto';
 import { UsersService } from './providers/users.service';
-import { NonNegativeIntPipe } from './../utils/pipes/nonNegativePipe';
 import { createManyUsersDTO } from './dto/create-many-users.dto';
 import { ApiParam, ApiQuery, ApiOperation } from '@nestjs/swagger';
 
@@ -50,19 +49,9 @@ export class UsersController {
     description: 'Enter the page count',
   })
   getUsers(
-    @Query(
-      'page',
-      new DefaultValuePipe(1),
-      ParseIntPipe,
-      new NonNegativeIntPipe('page'),
-    )
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe)
     page: number,
-    @Query(
-      'count',
-      new DefaultValuePipe(10),
-      ParseIntPipe,
-      new NonNegativeIntPipe('count'),
-    )
+    @Query('count', new DefaultValuePipe(10), ParseIntPipe)
     count: number,
   ) {
     return this.usersService.getUsers(page, count);
