@@ -11,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { MetaoptionsService } from './providers/metaoptions.service';
 import { CreateMetaOptionDTO } from './dto/create-metaoption.dto';
-import { NonNegativeIntPipe } from './../utils/pipes/nonNegativePipe';
 import { ApiParam, ApiQuery, ApiOperation } from '@nestjs/swagger';
 
 @Controller('metaoptions')
@@ -42,19 +41,9 @@ export class MetaoptionsController {
     description: 'Enter the page count',
   })
   getMetaOptions(
-    @Query(
-      'page',
-      new DefaultValuePipe(1),
-      ParseIntPipe,
-      new NonNegativeIntPipe('page'),
-    )
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe)
     page: number,
-    @Query(
-      'count',
-      new DefaultValuePipe(10),
-      ParseIntPipe,
-      new NonNegativeIntPipe('count'),
-    )
+    @Query('count', new DefaultValuePipe(10), ParseIntPipe)
     count: number,
   ) {
     return this.metaOptionsService.getMetaOptions(page, count);
