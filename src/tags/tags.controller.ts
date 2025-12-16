@@ -7,6 +7,7 @@ import {
   Query,
   ParseIntPipe,
   Param,
+  UseGuards,
 } from '@nestjs/common';
 import { TagsService } from './providers/tags.service';
 import { CreateTagDTO } from './dto/create-tags.dto';

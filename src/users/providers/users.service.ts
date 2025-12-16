@@ -11,6 +11,7 @@ import { Repository, DataSource } from 'typeorm';
 import { createManyUsersDTO } from '../dto/create-many-users.dto';
 import { PaginationService } from 'src/common/pagination/providers/pagination.service';
 import { PaginateQueryDTO } from 'src/common/pagination/dto/paginate-query.dto';
+import { HashingProvider } from 'src/auth/providers/hashing.provider';
 
 @Injectable()
 export class UsersService {
@@ -19,10 +20,13 @@ export class UsersService {
     private readonly usersRepository: Repository<Users>,
     private readonly dataSource: DataSource,
     private readonly paginationService: PaginationService,
+    private readonly hashingProvider: HashingProvider,
   ) {}
 
-  createUser(createUserData: CreateUserDTO) {
+  async createUser(createUserData: CreateUserDTO) {
     const user = this.usersRepository.create(createUserData);
+    const password = await this.hashingProvider.hashPassword(user.password);
+    user.password = password;
     return this.usersRepository.save(user);
   }
 
@@ -45,6 +49,13 @@ export class UsersService {
     if (!user) {
       throw new BadRequestException(`User with id: ${id} is not found`);
     }
+    return user;
+  }
+
+  async getUserByEmail(email: string) {
+    const user = await this.usersRepository.findOne({
+      where: { email },
+    });
     return user;
   }
 
@@ -87,6 +98,9 @@ export class UsersService {
     try {
       for (const user of createManyUsersData.users) {
         const newUser = queryRunner.manager.create(Users, user);
+        newUser.password = await this.hashingProvider.hashPassword(
+          user.password,
+        );
         const createdUser = await queryRunner.manager.save(newUser);
         users.push(createdUser);
       }

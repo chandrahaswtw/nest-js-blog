@@ -22,8 +22,8 @@ export class PostsService {
     private readonly tagsService: TagsService,
     private readonly paginationService: PaginationService,
   ) {}
-  async createPost(createPostData: CreatePostDTO) {
-    const user = await this.usersService.getUserById(createPostData.authorId);
+  async createPost(createPostData: CreatePostDTO, userId: number) {
+    const user = await this.usersService.getUserById(userId);
     if (!user) {
       throw new BadRequestException(
         `User with id ${createPostData.authorId} is not found`,

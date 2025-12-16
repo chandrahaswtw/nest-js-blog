@@ -15,17 +15,21 @@ import { UsersService } from './providers/users.service';
 import { createManyUsersDTO } from './dto/create-many-users.dto';
 import { ApiParam, ApiOperation } from '@nestjs/swagger';
 import { PaginateQueryDTO } from 'src/common/pagination/dto/paginate-query.dto';
+import { Authentication } from 'src/auth/decorators/authentication.decorator';
+import { EAuthType } from 'src/auth/common/enums/auth.enums';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @Authentication(EAuthType.None)
   @Post()
   @ApiOperation({ summary: 'Create user' })
   createUser(@Body() createUserData: CreateUserDTO) {
     return this.usersService.createUser(createUserData);
   }
 
+  @Authentication(EAuthType.None)
   @Post('/createMany')
   @ApiOperation({ summary: 'Create multiple users' })
   createManyUsers(@Body() createManyUsersData: createManyUsersDTO) {

@@ -8,9 +8,15 @@ import { PostsModule } from './posts/posts.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PaginationModule } from './common/pagination/pagination.module';
+import { AuthModule } from './auth/auth.module';
 import appConfig from './config/app.config';
 import databaseConfig from './config/database.config';
 import environmentValidation from './config/environment.validation';
+import { APP_GUARD } from '@nestjs/core';
+import { AccessTokenGuard } from './auth/guard/access-token/access-token.guard';
+import { AuthenticationGuard } from './auth/guard/authentication/authentication.guard';
+import { JwtModule } from '@nestjs/jwt';
+import authConfig from './auth/config/auth.config';
 
 const env = process.env.NODE_ENV;
 
@@ -23,7 +29,7 @@ const env = process.env.NODE_ENV;
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: env ? `.env.${env}` : '.env',
-      load: [appConfig, databaseConfig],
+      load: [appConfig, databaseConfig, authConfig],
       validationSchema: environmentValidation,
     }),
     TypeOrmModule.forRootAsync({
@@ -43,8 +49,29 @@ const env = process.env.NODE_ENV;
       },
     }),
     PaginationModule,
+    AuthModule,
+    JwtModule.registerAsync({
+      global: true,
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get('auth.JWT_SECRET'),
+        signOptions: {
+          expiresIn: configService.get('auth.JWT_ACCESS_TOKEN_TTL'),
+        },
+      }),
+      inject: [ConfigService],
+    }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+
+  // We need to pass the AccessTokenGuard still as provider as AuthenticationGuard internally use the AccessTokenGuard
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthenticationGuard,
+    },
+    AccessTokenGuard,
+  ],
 })
 export class AppModule {}
