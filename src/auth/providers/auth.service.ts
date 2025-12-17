@@ -3,6 +3,9 @@ import { HashingProvider } from './hashing.provider';
 import { SignInDTO } from '../dto/sign-in.dto';
 import { UsersService } from 'src/users/providers/users.service';
 import { JwtService } from '@nestjs/jwt';
+import { TokenProvider } from './token.provider';
+import { IAuthTokenPayload } from '../common/interfaces/auth.interfaces';
+import { RefreshTokenDTO } from '../dto/refresh-token.dto';
 
 @Injectable()
 export class AuthService {
@@ -10,6 +13,7 @@ export class AuthService {
     private readonly hashingProvider: HashingProvider,
     private usersService: UsersService,
     private jwtService: JwtService,
+    private readonly tokenProvider: TokenProvider,
   ) {}
 
   async signIn(signInData: SignInDTO) {
@@ -24,13 +28,27 @@ export class AuthService {
     if (!isAuth) {
       throw new UnauthorizedException('Invalid unsername or password');
     }
-    const payload = {
-      userId: user.id,
+    const authTokenPayload: IAuthTokenPayload = {
+      id: user.id,
       username: user.firstName,
       email: user.email,
     };
+
+    const { authToken, refreshToken } =
+      await this.tokenProvider.generateTokens(authTokenPayload);
     return {
-      access_token: await this.jwtService.signAsync(payload),
+      authToken,
+      refreshToken,
+    };
+  }
+
+  async refreshToken(refreshTokenData: RefreshTokenDTO) {
+    const { authToken, refreshToken } = await this.tokenProvider.refreshTokens(
+      refreshTokenData.refreshToken,
+    );
+    return {
+      authToken,
+      refreshToken,
     };
   }
 }

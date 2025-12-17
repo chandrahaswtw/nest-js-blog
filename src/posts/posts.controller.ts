@@ -8,12 +8,11 @@ import {
   ParseIntPipe,
   Param,
   Body,
-  DefaultValuePipe,
 } from '@nestjs/common';
 import { PostsService } from './providers/posts.service';
 import { CreatePostDTO } from './dto/create-post.dto';
 import { PatchPostDTO } from './dto/update-post.dto';
-import { ApiParam, ApiQuery, ApiOperation } from '@nestjs/swagger';
+import { ApiParam, ApiOperation } from '@nestjs/swagger';
 import { GetPostsDTO } from './dto/get-posts.dto';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 
@@ -25,7 +24,7 @@ export class PostsController {
   @ApiOperation({ summary: 'Create post' })
   createPost(
     @Body() createPostData: CreatePostDTO,
-    @CurrentUser('userId') userid: number,
+    @CurrentUser('id') userid: number,
   ) {
     return this.postsService.createPost(createPostData, userid);
   }

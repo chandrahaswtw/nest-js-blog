@@ -55,9 +55,6 @@ const env = process.env.NODE_ENV;
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         secret: configService.get('auth.JWT_SECRET'),
-        signOptions: {
-          expiresIn: configService.get('auth.JWT_ACCESS_TOKEN_TTL'),
-        },
       }),
       inject: [ConfigService],
     }),
