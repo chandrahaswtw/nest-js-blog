@@ -24,11 +24,6 @@ export class TokenProvider {
       id: authTokenPayload.id,
     };
 
-    console.log(
-      this.authEnv.JWT_AUTH_TOKEN_TTL,
-      this.authEnv.JWT_REFRESH_TOKEN_TTL,
-    );
-
     const [authToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(authTokenPayload, {
         expiresIn: this.authEnv.JWT_AUTH_TOKEN_TTL,
@@ -46,7 +41,6 @@ export class TokenProvider {
     try {
       payload = await this.jwtService.verifyAsync<IRefreshToken>(refreshToken);
     } catch {
-      console.log('ERROR');
       throw new UnauthorizedException();
     }
 

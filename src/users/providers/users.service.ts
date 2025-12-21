@@ -2,6 +2,8 @@ import {
   Injectable,
   BadRequestException,
   ConflictException,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { CreateUserDTO } from '../dto/create-user.dto';
 import { PatchUserDTO } from '../dto/patch-user.dto';
@@ -12,6 +14,8 @@ import { createManyUsersDTO } from '../dto/create-many-users.dto';
 import { PaginationService } from 'src/common/pagination/providers/pagination.service';
 import { PaginateQueryDTO } from 'src/common/pagination/dto/paginate-query.dto';
 import { HashingProvider } from 'src/auth/providers/hashing.provider';
+import { GoogleUsersProvider } from './google-users.provider';
+import { IGoogleUser } from '../common/interfaces/users.interface';
 
 @Injectable()
 export class UsersService {
@@ -20,7 +24,9 @@ export class UsersService {
     private readonly usersRepository: Repository<Users>,
     private readonly dataSource: DataSource,
     private readonly paginationService: PaginationService,
+    @Inject(forwardRef(() => HashingProvider))
     private readonly hashingProvider: HashingProvider,
+    private readonly googleUsersProvider: GoogleUsersProvider,
   ) {}
 
   async createUser(createUserData: CreateUserDTO) {
@@ -118,5 +124,13 @@ export class UsersService {
     }
 
     return users;
+  }
+
+  async createGoogleUser(userData: IGoogleUser) {
+    return await this.googleUsersProvider.createGoogleUser(userData);
+  }
+
+  async getGoogleUserById(id: string) {
+    return await this.googleUsersProvider.getGoogleUserById(id);
   }
 }

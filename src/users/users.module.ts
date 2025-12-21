@@ -5,10 +5,11 @@ import { Users } from './users.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PaginationModule } from 'src/common/pagination/pagination.module';
 import { AuthModule } from 'src/auth/auth.module';
+import { GoogleUsersProvider } from './providers/google-users.provider';
 
 @Module({
   controllers: [UsersController],
-  providers: [UsersService],
+  providers: [UsersService, GoogleUsersProvider],
   imports: [
     TypeOrmModule.forFeature([Users]),
     PaginationModule,

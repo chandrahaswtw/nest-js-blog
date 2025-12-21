@@ -39,8 +39,6 @@ export class AuthenticationGuard implements CanActivate {
         },
       );
 
-      console.log(isValid);
-
       if (isValid) {
         return true;
       }

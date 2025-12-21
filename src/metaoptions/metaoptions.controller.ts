@@ -20,7 +20,6 @@ export class MetaoptionsController {
   @Post()
   @ApiOperation({ summary: 'Create meta option' })
   createMetaOption(@Body() createMetaOptionData: CreateMetaOptionDTO) {
-    console.log(createMetaOptionData);
     return this.metaOptionsService.createMetaOption(createMetaOptionData);
   }
 
