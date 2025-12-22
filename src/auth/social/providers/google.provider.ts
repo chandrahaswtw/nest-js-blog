@@ -3,7 +3,6 @@ import {
   Inject,
   UnauthorizedException,
   forwardRef,
-  OnModuleInit,
 } from '@nestjs/common';
 import { OAuth2Client } from 'google-auth-library';
 import { GoogleTokenDTO } from '../dto/google-token.dto';
@@ -12,7 +11,7 @@ import { TokenProvider } from 'src/auth/providers/token.provider';
 import { GoogleAuthClientProvider } from './google-auth-client.provider';
 
 @Injectable()
-export class GoogleProvider implements OnModuleInit {
+export class GoogleProvider {
   private oauthClient: OAuth2Client;
   constructor(
     @Inject(forwardRef(() => UsersService))
@@ -20,10 +19,6 @@ export class GoogleProvider implements OnModuleInit {
     private readonly tokenProvider: TokenProvider,
     private readonly googleAuthClientProvider: GoogleAuthClientProvider,
   ) {}
-
-  onModuleInit() {
-    console.log('SMOKING GUN');
-  }
 
   async authenticate(googleTokenDTO: GoogleTokenDTO) {
     try {

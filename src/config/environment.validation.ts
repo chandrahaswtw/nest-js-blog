@@ -14,4 +14,5 @@ export default Joi.object({
   AUTO_LOAD_ENTITIES: Joi.string().required(),
   JWT_SECRET: Joi.string().required(),
   JWT_ACCESS_TOKEN_TTL: Joi.number().required(),
+  API_VERSION: Joi.string().required(),
 });

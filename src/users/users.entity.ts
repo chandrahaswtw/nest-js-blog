@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import { Posts } from 'src/posts/posts.entity';
 import {
   PrimaryGeneratedColumn,
@@ -35,6 +36,7 @@ export class Users {
   })
   email: string;
 
+  @Exclude()
   @Column({
     type: 'varchar',
     length: 300,
@@ -42,6 +44,7 @@ export class Users {
   })
   password: string;
 
+  @Exclude()
   @Column({
     type: 'varchar',
     length: 300,
@@ -58,6 +61,7 @@ export class Users {
   @UpdateDateColumn()
   updatedAt: Date;
 
+  @Exclude()
   @DeleteDateColumn()
   deletedAt: Date;
 }

@@ -1,5 +1,6 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -8,6 +9,7 @@ import {
   Patch,
   Post,
   Query,
+  UseInterceptors,
 } from '@nestjs/common';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { PatchUserDTO } from './dto/patch-user.dto';
@@ -23,6 +25,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Authentication(EAuthType.None)
+  @UseInterceptors(ClassSerializerInterceptor)
   @Post()
   @ApiOperation({ summary: 'Create user' })
   createUser(@Body() createUserData: CreateUserDTO) {

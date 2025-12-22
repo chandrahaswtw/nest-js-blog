@@ -12,11 +12,12 @@ import { AuthModule } from './auth/auth.module';
 import appConfig from './config/app.config';
 import databaseConfig from './config/database.config';
 import environmentValidation from './config/environment.validation';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { AccessTokenGuard } from './auth/guard/access-token/access-token.guard';
 import { AuthenticationGuard } from './auth/guard/authentication/authentication.guard';
 import { JwtModule } from '@nestjs/jwt';
 import authConfig from './auth/config/auth.config';
+import { DataResponseInterceptor } from './common/interceptors/data-response.interceptor';
 
 const env = process.env.NODE_ENV;
 
@@ -61,12 +62,15 @@ const env = process.env.NODE_ENV;
   ],
   controllers: [AppController],
 
-  // We need to pass the AccessTokenGuard still as provider as AuthenticationGuard internally use the AccessTokenGuard
   providers: [
     AppService,
     {
       provide: APP_GUARD,
       useClass: AuthenticationGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: DataResponseInterceptor,
     },
     AccessTokenGuard,
   ],
