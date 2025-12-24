@@ -8,6 +8,7 @@ import { TokenProvider } from './providers/token.provider';
 import { GoogleProvider } from './social/providers/google.provider';
 import { GoogleController } from './social/google.controller';
 import { GoogleAuthClientProvider } from './social/providers/google-auth-client.provider';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   providers: [

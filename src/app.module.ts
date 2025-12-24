@@ -18,6 +18,8 @@ import { AuthenticationGuard } from './auth/guard/authentication/authentication.
 import { JwtModule } from '@nestjs/jwt';
 import authConfig from './auth/config/auth.config';
 import { DataResponseInterceptor } from './common/interceptors/data-response.interceptor';
+import { AwsModule } from './aws/aws.module';
+import { UploadsModule } from './uploads/uploads.module';
 
 const env = process.env.NODE_ENV;
 
@@ -59,6 +61,8 @@ const env = process.env.NODE_ENV;
       }),
       inject: [ConfigService],
     }),
+    AwsModule,
+    UploadsModule,
   ],
   controllers: [AppController],
 

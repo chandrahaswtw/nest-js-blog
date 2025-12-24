@@ -50,7 +50,6 @@ export class UsersService {
   async getUserById(id: number) {
     const user = await this.usersRepository.findOne({
       where: { id },
-      relations: { post: true },
     });
     if (!user) {
       throw new BadRequestException(`User with id: ${id} is not found`);

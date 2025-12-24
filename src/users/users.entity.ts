@@ -1,5 +1,6 @@
 import { Exclude } from 'class-transformer';
 import { Posts } from 'src/posts/posts.entity';
+import { Uploads } from 'src/uploads/uploads.entity';
 import {
   PrimaryGeneratedColumn,
   Column,
@@ -54,6 +55,9 @@ export class Users {
 
   @OneToMany(() => Posts, (post) => post.author)
   post: Posts[];
+
+  @OneToMany(() => Uploads, (fileUpload) => fileUpload.userId)
+  fileUpload: Uploads[];
 
   @CreateDateColumn()
   createdAt: Date;
