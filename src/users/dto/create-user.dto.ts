@@ -16,7 +16,6 @@ export class CreateUserDTO {
   })
   @IsString()
   @IsNotEmpty()
-  @MinLength(5)
   @MaxLength(50)
   firstName: string;
 
@@ -27,7 +26,6 @@ export class CreateUserDTO {
   })
   @IsString()
   @IsOptional()
-  @MinLength(5)
   @MaxLength(50)
   lastName?: string;
 
