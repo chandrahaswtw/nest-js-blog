@@ -30,6 +30,12 @@ export class UsersService {
   ) {}
 
   async createUser(createUserData: CreateUserDTO) {
+    const existingUser = await this.getUserByEmail(createUserData.email);
+    if (existingUser) {
+      throw new ConflictException(
+        `Duplicate record existed with email ${createUserData.email}`,
+      );
+    }
     const user = this.usersRepository.create(createUserData);
     const password = await this.hashingProvider.hashPassword(user.password);
     user.password = password;
